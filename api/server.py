@@ -1,10 +1,12 @@
-from fastapi import FastAPI, Request
+from flask import Flask
+from flask_restful import Api, Resource, reqparse
 from joblib import load
 import pandas as pd
-from urllib.parse import urlparse 
 
-app = FastAPI()
-model = load('phishing_detector.joblib') 
+app = Flask(__name__)
+api = Api(app)
+
+model = load('phishing_detector.joblib') # Load your initial model
 
 def extract_features(domain):
     return {
@@ -18,19 +20,20 @@ def extract_features(domain):
         ]  
     }
 
-@app.post("/predict")
-async def predict(request: Request):
-    data = await request.json()
-    url = data["url"]
+class Predict(Resource):
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('url')
+        args = parser.parse_args()
 
-    domain = urlparse(url).netloc 
-    features = extract_features(domain) 
-    features_df = pd.DataFrame([features]) 
+        url = args['url']
+        features = extract_features(url)
+        features_df = pd.DataFrame([features])
 
-    prediction = model.predict(features_df)[0]
-    return {"prediction": int(prediction)}  
+        prediction = model.predict(features_df)[0]
+        return {'prediction': int(prediction)}
 
-# Instructions to run:
-# 1. Ensure `phishing_detector.joblib` is in the same directory
-# 2. Install dependencies: pip install fastapi uvicorn pandas scikit-learn urllib
-# 3. Run the server: uvicorn main:app --host 0.0.0.0 --port 3000 
+api.add_resource(Predict, '/predict')
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', debug=True) # Add debug=True for development

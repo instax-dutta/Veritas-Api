@@ -1,6 +1,5 @@
-fastapi
-uvicorn
+flask
+flask-restful
 joblib
 pandas
 scikit-learn 
-urllib3
