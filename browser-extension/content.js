@@ -3,7 +3,7 @@ const trustedTlds = [  // Expand as needed
     "uk", "ca", "au", "de", "io", "info"
 ]; 
 
-const predictionServerURL = "http://localhost:3000/predict"; 
+const predictionServerURL = "http://65.0.89.194:3000/predict"; 
 
 async function predictPhishing(url) {
     try {
