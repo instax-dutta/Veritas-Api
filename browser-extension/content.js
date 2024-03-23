@@ -3,9 +3,9 @@ const trustedTlds = [  // Expand as needed
     "uk", "ca", "au", "de", "io", "info"
 ]; 
 
-const predictionServerURL = "http://localhost:3000/predict";  
+const predictionServerURL = "http://localhost:3000/predict"; 
 
-async function predictPhishing(url) { // We'll focus on sending URL 
+async function predictPhishing(url) {
     try {
         const response = await fetch(predictionServerURL, {
             method: 'POST',
@@ -32,10 +32,8 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
         predictPhishing(currentURL)
             .then(prediction => {
-                chrome.runtime.sendMessage({ prediction: prediction.prediction });  // Send to background.js
+                chrome.runtime.sendMessage({ prediction: prediction.prediction });  
             })
             .catch(error => console.error("Error in content.js:", error)); 
     }
 });
-
-//  No need for extractFeaturesFromURL or updateIcon (handled by server and background.js) 
