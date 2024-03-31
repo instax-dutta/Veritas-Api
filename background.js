@@ -12,7 +12,6 @@ function extractFeatures(url) {
         subdomains: parts.hostname.count("."), 
         trusted_tld: ["com", "org", "net", "edu", "gov", "uk", "ca", "au", "de", "io", "info"].includes(parts.hostname.split('.').pop()), 
         has_protocol: hasProtocol
-        // ... Potentially add other features from your training code
     };
 }
 
@@ -41,7 +40,7 @@ async function predictPhishing(domain) {
 
     } catch (error) {
         console.error("Prediction Error:", error); 
-        return "unknown"; // Handle errors gracefully
+        return "unknown"; // error handling lmfao 
     }
 }
 
