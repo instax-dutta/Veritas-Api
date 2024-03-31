@@ -1,6 +1,6 @@
 import { InferenceSession } from 'onnxruntime-web';
 
-// Feature extraction (Adapt from your training code)
+// Feature extraction (Matches your training code)
 function extractFeatures(url) {
     const parts = new URL(url);
     const hasProtocol = parts.protocol === 'http:' || parts.protocol === 'https:';
@@ -15,23 +15,32 @@ function extractFeatures(url) {
     };
 }
 
+// Function to load your ONNX model
 async function loadModel() {
     const session = await InferenceSession.create('./phishing_detector.onnx');
     return session;
 }
 
+// Load the model when the extension starts
 let modelSession = await loadModel(); 
 
-// Prediction with Error Handling
+// Function for phishing prediction
 async function predictPhishing(domain) {
     try {
         const features = extractFeatures(domain);
 
-        // Prepare input for ONNX.js (Adjust based on your model)
-        const inputTensor = new Float32Array(Object.values(features));
+        // Ensure all features have values before preparing the tensor
+        const allFeaturesHaveValues = Object.values(features).every(value => typeof value !== 'undefined');
+        if (!allFeaturesHaveValues) {
+            console.error("Missing feature values in extracted features!", features);
+            return "unknown"; 
+        }
+
+        // Prepare input tensor (assuming types from your training code)
+        const inputTensor = new Float32Array(Object.values(features)); 
         const feeds = { float_input: inputTensor.reshape([1, inputTensor.length]) };
 
-        // Run inference
+        // Run inference using ONNX.js
         const results = await modelSession.run(feeds);
         const predictionRaw = results.output.data[0];
         const prediction = predictionRaw > 0.5 ? "phishing" : "legitimate"; 
@@ -40,11 +49,11 @@ async function predictPhishing(domain) {
 
     } catch (error) {
         console.error("Prediction Error:", error); 
-        return "unknown"; // error handling lmfao 
+        return "unknown"; 
     }
 }
 
-// Message Handling
+// Message Handling 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.domain) {
         predictPhishing(message.domain) 

@@ -1,6 +1,6 @@
 function extractDomain(url) {
     const hostname = new URL(url).hostname;
-    return hostname.split('.').slice(-2).join('.'); // Extract main domain
+    return hostname.split('.').slice(-2).join('.'); 
 }
 
 const currentDomain = extractDomain(window.location.href);
