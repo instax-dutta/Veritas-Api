@@ -1,4 +1,4 @@
-import { InferenceSession } from 'onnxruntime-web';
+import * as ort from 'onnxruntime-web'; 
 
 // Feature extraction (Matches your training code)
 function extractFeatures(url) {
@@ -15,16 +15,17 @@ function extractFeatures(url) {
     };
 }
 
-// Function to load your ONNX model
+// Model Loading 
+const modelPath = './phishing_detector.onnx'; 
+
 async function loadModel() {
-    const session = await InferenceSession.create('./phishing_detector.onnx');
+    const session = await ort.InferenceSession.create(modelPath);
     return session;
 }
 
-// Load the model when the extension starts
 let modelSession = await loadModel(); 
 
-// Function for phishing prediction
+// Prediction Function
 async function predictPhishing(domain) {
     try {
         const features = extractFeatures(domain);
@@ -38,12 +39,14 @@ async function predictPhishing(domain) {
 
         // Prepare input tensor (assuming types from your training code)
         const inputTensor = new Float32Array(Object.values(features)); 
-        const feeds = { float_input: inputTensor.reshape([1, inputTensor.length]) };
+        const feeds = { float_input: inputTensor.reshape([1, inputTensor.length]) }; 
 
-        // Run inference using ONNX.js
+        // Run inference
         const results = await modelSession.run(feeds);
+
+        // Assuming your model produces a single output
         const predictionRaw = results.output.data[0];
-        const prediction = predictionRaw > 0.5 ? "phishing" : "legitimate"; 
+        const prediction = predictionRaw > 0.5 ? "phishing" : "legitimate";
 
         return prediction; 
 
