@@ -1,0 +1,25 @@
+{
+    "manifest_version": 2,
+    "name": "Phishing Site Blocker",
+    "version": "1.0",
+    "description": "Warns the user if they are visiting a known phishing site",
+    "background": {
+      "scripts": ["background.js"]
+    },
+    "content_scripts": [
+      {
+        "matches": ["<all_urls>"],
+        "js": ["content.js"]
+      }
+    ],
+    "browser_action": {
+      "default_title": "Phishing Site Blocker",
+      "default_icon": {
+        "16": "safe_icon_16.png",
+        "32": "safe_icon_32.png",
+        "48": "safe_icon_48.png",
+        "128": "safe_icon_128.png"
+      }
+    },
+    "permissions": ["<all_urls>"]
+  }
